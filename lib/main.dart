@@ -6,6 +6,13 @@
 // ![Three raised buttons, one enabled, another disabled, and the last one
 // styled with a blue gradient background](https://flutter.github.io/assets-for-api-docs/assets/material/raised_button.png)
 import 'package:flutter/material.dart';
+import 'MQTTClientWrapper.dart';
+import 'song.dart';
+
+int uid;
+bool voted = false;
+String _song = "Placeholder";
+String _artist = "Placeholder";
 
 void main() => runApp(MyApp());
 
@@ -14,6 +21,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'Test',
       home: Scaffold(
         appBar: AppBar(title: const Text('Test')),
         body: Center(child: TextFieldEx()),
@@ -28,8 +36,19 @@ class TextFieldEx extends StatefulWidget {
 }
 
 class _TextFieldExState extends State<TextFieldEx> {
-  String _song = "Placeholder";
-  String _artist = "Placeholder";
+  MQTTClientWrapper mqttClientWrapper;
+  Song currentSong;
+
+  void setup() {
+    mqttClientWrapper = MQTTClientWrapper(() => init(), (s) => updateClient(s));
+    mqttClientWrapper.prepareMqttClient();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    setup();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,20 +59,53 @@ class _TextFieldExState extends State<TextFieldEx> {
         const SizedBox(height: 10),
         Text('$_artist', style: TextStyle(fontSize: 20)),
         const SizedBox(height: 30),
-        RaisedButton(
-          onPressed: () => like(),
-          child: Text('Like', style: TextStyle(fontSize: 25)),
-        ),
+        _buildLikeButton(),
         const SizedBox(height: 10),
-        RaisedButton(
-          onPressed: () => dislike(),
-          child: Text('Dislike', style: TextStyle(fontSize: 25)),
-        ),
+        _buildDislikeButton(),
       ],
     );
   }
 
-  void like() {}
+  Widget _buildLikeButton() {
+    return new RaisedButton(
+      child: Text('Like', style: TextStyle(fontSize: 25)),
+      onPressed: voted ? null : like,
+    );
+  }
 
-  void dislike() {}
+  Widget _buildDislikeButton() {
+    return new RaisedButton(
+      child: Text('Dislike', style: TextStyle(fontSize: 25)),
+      onPressed: voted ? null : dislike,
+    );
+  }
+
+  void like() {
+    //if (!voted) print('Liked');
+    if (!voted) mqttClientWrapper.publishVote(true, uid);
+    setState(() {
+      voted = true;
+    });
+  }
+
+  void dislike() {
+    //if (!voted) print('Disliked');
+    if (!voted) mqttClientWrapper.publishVote(false, uid);
+    setState(() {
+      voted = true;
+    });
+  }
+
+  void init() {
+    uid = 0;
+    voted = false;
+  }
+
+  void updateClient(Song s) {
+    setState(() {
+      _song = s.song;
+      _artist = s.artist;
+      voted = false;
+    });
+  }
 }
