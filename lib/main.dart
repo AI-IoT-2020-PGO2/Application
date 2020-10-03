@@ -116,6 +116,8 @@ class _TextFieldExState extends State<TextFieldEx> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
+        Text('Uid: $uid', style: TextStyle(fontSize: 20)),
+        const SizedBox(height: 10),
         Text(_song.title, style: TextStyle(fontSize: 40)),
         const SizedBox(height: 10),
         Text(_song.artist, style: TextStyle(fontSize: 20)),
@@ -167,9 +169,9 @@ class _TextFieldExState extends State<TextFieldEx> {
   String _getTime() {
     var now = new DateTime.now();
     String out = now.year.toString().padLeft(4, '0') +
-        '/' +
+        '-' +
         now.month.toString().padLeft(2, '0') +
-        '/' +
+        '-' +
         now.day.toString().padLeft(2, '0') +
         ' ' +
         now.hour.toString().padLeft(2, '0') +
