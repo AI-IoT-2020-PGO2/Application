@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: Constants.appName,
       home: Scaffold(
-        appBar: AppBar(title: const Text('Test')),
+        appBar: AppBar(title: Text(Constants.appName)),
         body: Center(child: TextFieldEx()),
       ),
     );
@@ -74,33 +74,28 @@ class _TextFieldExState extends State<TextFieldEx> {
     // See if there a UID already exists from a previous session
     int readUid = await _read('uid');
 
-    if (readUid == 0 && kReleaseMode) {
-      // If not and in release
+    if (readUid == 0) {
+      // If not
 
       // Ask for a UID
       final response = await http.post(Constants.uidUrl);
+      debugPrint("HTTP:Response received " + response.statusCode.toString());
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 201) {
         // If the answer is received correctly
 
         // Assign the new UID
+        debugPrint('HTTP::' + response.body);
+        Map<String, dynamic> temp = jsonDecode(response.body);
+
         setState(() {
-          uid = json.decode(response.body);
+          uid = temp['uid'];
         });
         // Save the UID for later sessions
         _save('uid', uid);
       } else {
         throw Exception('Failed to get UID');
       }
-    } else if (readUid == 0 && !kReleaseMode) {
-      // If a UID is needed in debug mode
-
-      // Assign a set UID
-      setState(() {
-        uid = 1234;
-      });
-      // Save the UID for later sessions
-      _save('uid', uid);
     } else {
       // If there already was a UID
 
@@ -116,8 +111,6 @@ class _TextFieldExState extends State<TextFieldEx> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        Text('Uid: $uid', style: TextStyle(fontSize: 20)),
-        const SizedBox(height: 10),
         Text(_song.title, style: TextStyle(fontSize: 40)),
         const SizedBox(height: 10),
         Text(_song.artist, style: TextStyle(fontSize: 20)),

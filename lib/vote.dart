@@ -13,12 +13,12 @@ class Vote {
 
   /// Decodes [json] to Song
   Vote.fromJson(Map<String, dynamic> json)
-      : vote = json['vote'],
-        uid = json['uid'],
+      : vote = json['score'],
+        uid = json['userID'],
         timestamp = json['timestamp'],
         songID = json['songID'];
 
   /// Encodes Song to JSON
   Map<String, dynamic> toJson() =>
-      {'vote': vote, 'uid': uid, 'timestamp': timestamp, 'songID': songID};
+      {'score': vote, 'userID': uid, 'timestamp': timestamp, 'songID': songID};
 }
