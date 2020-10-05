@@ -111,9 +111,24 @@ class _TextFieldExState extends State<TextFieldEx> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        Text(_song.title, style: TextStyle(fontSize: 40)),
+        /* For debugging on devices
+        Text(
+          '$uid',
+          style: TextStyle(fontSize: 20),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 10),*/
+        Text(
+          _song.title,
+          style: TextStyle(fontSize: 40),
+          textAlign: TextAlign.center,
+        ),
         const SizedBox(height: 10),
-        Text(_song.artist, style: TextStyle(fontSize: 20)),
+        Text(
+          _song.artist,
+          style: TextStyle(fontSize: 20),
+          textAlign: TextAlign.center,
+        ),
         const SizedBox(height: 30),
         _buildLikeButton(),
         const SizedBox(height: 10),
